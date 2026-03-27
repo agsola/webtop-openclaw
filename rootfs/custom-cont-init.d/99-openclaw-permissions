@@ -1,0 +1,18 @@
+#!/command/with-contenv bash
+
+# Este script se ejecuta como root justo antes de arrancar los servicios s6 secundarios (como webtop u openclaw).
+
+echo "[openclaw-init] Verificando permisos del directorio data..."
+
+# Aseguramos que el directorio .openclaw existe dentro de config y forzamos
+# que pertenezca íntegramente al usuario abc (que usará openclaw).
+mkdir -p /config/.openclaw
+chown -R abc:abc /config/.openclaw
+
+# Endurecimiento de permisos recomendado por OpenClaw Security Doctor:
+chmod 700 /config/.openclaw
+if [ -f "/config/.openclaw/openclaw.json" ]; then
+    chmod 600 /config/.openclaw/openclaw.json
+fi
+
+echo "[openclaw-init] Permisos aplicados."

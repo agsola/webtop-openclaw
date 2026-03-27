@@ -1,0 +1,4 @@
+FROM alpine
+COPY rootfs/ /
+RUN ls -la /
+RUN stat /custom-cont-init.d

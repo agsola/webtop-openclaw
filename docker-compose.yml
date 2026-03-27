@@ -1,0 +1,41 @@
+# Docker Compose para arrancar webtop + openclaw (Simplificado)
+
+services:
+  openclaw-webtop:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openclaw-webtop
+    # Para asegurar que se tienen permisos si hace uso de recursos del host
+    security_opt:
+      - seccomp:unconfined 
+    environment:
+      # PUID y PGID gestionan los permisos (1000 es el primer usuario local típicamente)
+      # Esto asegura que los archivos creados pertenezcan a tu usuario en host
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+      - LC_ALL=es_ES.UTF-8
+      - TITLE=Gominola Desktop
+      - NODE_COMPILE_CACHE=/tmp/openclaw-compile-cache
+      - OPENCLAW_NO_RESPAWN=1
+      # - PIXELFLUX_WAYLAND=true
+      - CUSTOM_USER=${CUSTOM_USER:-admin}
+      - PASSWORD=${PASSWORD:-admin}
+    volumes:
+      # Todo el estado persistirá en una única carpeta `./webtop-config` local 
+      # (incluyendo `.openclaw` dentro)
+      - ./webtop-config:/config
+      # Habilitar el acceso al socket si openclaw necesita crear o leer contenedores
+      # - /var/run/docker.sock:/var/run/docker.sock
+      # Mapeo de volumen local (por compatibilidad con el entorno viejo)
+      # - ./docker_volumes:/docker_volumes
+    ports:
+      # Webtop (HTTP puerto)
+      - "127.0.0.1:3223:3000"
+      # - "3000:3000"
+      # Openclaw Gateway / Dashboard
+      - "18789:18789"
+    shm_size: "4gb" # Evita que las apps pesadas (como Chrome) se crasheen dentro de Webtop
+    # Reiniciar siempre salvo que se baje explícitamente (ej: docker compose down)
+    restart: unless-stopped

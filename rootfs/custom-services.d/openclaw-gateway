@@ -1,0 +1,7 @@
+#!/command/with-contenv bash
+
+# Archivo de servicio s6-overlay para arrancar el Gateway de Openclaw junto con el contenedor
+# Ejecuta openclaw bajo el usuario 'abc', que gestiona Webtop con PUID y PGID
+
+echo "[openclaw-gateway] Iniciando Gateway..."
+exec s6-setuidgid abc bash -l -c 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"; openclaw gateway run --allow-unconfigured'

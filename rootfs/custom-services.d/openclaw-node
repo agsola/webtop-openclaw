@@ -1,0 +1,11 @@
+#!/command/with-contenv bash
+
+# Archivo de servicio s6-overlay para arrancar el Node de Openclaw
+# Ejecuta openclaw bajo el usuario 'abc'
+
+echo "[openclaw-node] Esperando 5 segundos a que el gateway inicie..."
+sleep 5
+
+echo "[openclaw-node] Iniciando Nodo..."
+# Ejecutamos el nodo bajo el usuario abc, cargando el PATH de brew primero
+exec s6-setuidgid abc bash -l -c 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"; openclaw node run'
